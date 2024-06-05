@@ -2,7 +2,7 @@
 
 You are required to provide forecast intervals for the **percentage reduction** in certain types of hospital activity at the England level over a fifteen-year time horizon under the following scenario:
 
-**Scenario A - steady state community capacity** Capacity (and funding, adjusted for efficiency requirements) of community services grows in line with population growth and inflation, but no more. New initiatives would be through repurposing existing resource.
+**Scenario B - growing community capacity** Capacity (and funding, adjusted for efficiency requirements) of community services grows over and above population growth and inflation so that it is calibrated to mitigate an agreed level of unplanned admitted activity for adults.
 
 The focus here is exclusively on hospital activity which may be **mitigated**. You must not incorporate factors which increase hospital activity into your judgements because such factors are accommodated elsewhere in the model.
 
@@ -24,7 +24,7 @@ For each parameter
 
 1) To review the description and plot for each parameter.
 
-2)  To thoughtfully list out the factors which you think will lead to a surprising (low or high) value under **Scenario A - steady state community capacity**
+2)  To thoughtfully list out the factors which you think will lead to a surprising (low or high) value under **Scenario B - growing community capacity**
 
 3) Use the slider to select the lower and upper % values for your forecast based on the factors you have listed. The percentage reductions can only go from 0% (no reduction) to 100% (total reduction).
 
