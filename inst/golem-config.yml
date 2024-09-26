@@ -2,23 +2,29 @@ default:
   golem_name: nhp.elicitation.tool
   golem_version: 0.0.0.9000
   app_prod: no
+  horizon: 22
+  range:
+    low: -5
+    high: 10
+    default_low: 0
+    default_high: 4
   strategies:
     ndg:
-      ed-attendances:
+      ed_attendances:
         name: ED attendances
-        label: "Count"
+        label: "Attendances"
         min_year: 2013
-      inpatient-elective-admissions:
+      inpatient_elective_admissions:
         name: Inpatient elective admissions
-        label: "Count"
+        label: "Admissions"
         min_year: 2013
-      inpatient-emergency-admissions:
+      inpatient_emergency_admissions:
         name: Inpatient emergency admissions
-        label: "Count"
+        label: "Admissions"
         min_year: 2013
-      outpatient-attendances:
+      outpatient_attendances:
         name: Outpatient attendances
-        label: "Count"
+        label: "Attendances"
         min_year: 2013
 production:
   app_prod: yes

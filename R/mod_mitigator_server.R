@@ -119,11 +119,21 @@ mod_mitigator_server <- function(id, email, strategies) {
     param_table <- shiny::reactive({
       last_year <- selected_data() |>
         dplyr::slice_tail(n = 1)
+      
+      years = get_golem_config("horizon")
+      
+      # For compound growth
+      #p <- 1 + input$param_values / 100
+      
+      # For annual growth
+      # Converts annual 0.78% -> 1.15 (multiplier for 15% compound)
 
-      p <- 1 - input$param_values / 100
-
+      p <- annual_to_compound(input$param_values, years)
+      
+      horizon_year <- last_year$year + as.numeric(paste0(years, years))
+      
       tibble::tibble(
-        year = last_year$year + c(0, 2020),
+        year = c(last_year$year, horizon_year), # Sets horizon year for plot
         value_lo = last_year$rate * c(1, p[[1]]),
         value_hi = last_year$rate * c(1, p[[2]])
       )
@@ -183,8 +193,8 @@ mod_mitigator_server <- function(id, email, strategies) {
       v <- if (nrow(v) == 0) {
         if (is_phase_1()) {
           list(
-            lo = 0,
-            hi = 100,
+            lo = get_golem_config("range")$default_low,
+            hi = get_golem_config("range")$default_high,
             comments_lo = "",
             comments_hi = ""
           )

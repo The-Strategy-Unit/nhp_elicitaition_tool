@@ -39,7 +39,7 @@ mod_complete_server <- function(id, email, strategies) {
         ) |>
         gt::tab_spanner("Values", c("lo", "hi")) |>
         gt::tab_spanner("Comments", c("comments_lo", "comments_hi")) |>
-        gt::fmt_integer(c("lo", "hi")) |>
+        gt::fmt_number(c("lo", "hi"), decimals = 1) |>
         gt::tab_options(
           row_group.border.top.width = gt::px(2),
           row_group.border.top.color = "black",

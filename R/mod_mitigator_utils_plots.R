@@ -15,8 +15,8 @@ mitigator_trend_plot <- function(data, param_table, value_format, min_year, y_ti
     ggplot2::annotate(
       "ribbon",
       x = param_table$year,
-      ymin = param_table$value_lo[[1]] * c(1, 0),
-      ymax = param_table$value_lo[[1]] * c(1, 1),
+      ymin = param_table$value_lo[[1]] * c(1, annual_to_compound(get_golem_config("range")$low, get_golem_config("horizon"))),
+      ymax = param_table$value_lo[[1]] * c(1, annual_to_compound(get_golem_config("range")$high, get_golem_config("horizon"))),
       fill = "#2c2825",
       alpha = 0.05
     ) +
@@ -92,7 +92,7 @@ mitigator_results_plot <- function(data, values, email) {
     ) |>
     dplyr::filter(
       .data[["is_me"]] | !(
-        .data[["lo"]] == 0 & .data[["hi"]] == 100
+        .data[["lo"]] == get_golem_config("range")$low & .data[["hi"]] == get_golem_config("range")$high
       )
     ) |>
     dplyr::arrange(.data[["mean"]]) |>

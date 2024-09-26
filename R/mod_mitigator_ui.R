@@ -59,24 +59,25 @@ mod_mitigator_ui <- function(id) {
             col_1(
               shinyWidgets::noUiSliderInput(
                 ns("param_values"),
-                "Percentage Reduction",
-                min = 0,
-                max = 100,
-                value = c(0, 100),
-                step = 1,
+                "Annual growth rate",
+                min = get_golem_config("range")$low,
+                max = get_golem_config("range")$high,
+                value = c(get_golem_config("range")$default_low, get_golem_config("range")$default_high),
+                step = 0.1,
                 orientation = "vertical",
+                direction = "rtl",
                 width = "100%",
                 height = "500px",
                 color = "#fcdf83",
-                format = shinyWidgets::wNumbFormat(decimals = 0)
+                format = shinyWidgets::wNumbFormat(decimals = 1)
               )
             ),
             col_3(
               shiny::tags$div(
                 style = "position: absolute; top: 0px; width: 95%",
                 shiny::textAreaInput(
-                  ns("why_lo"),
-                  label = "What factors make it a surprisingly low % reduction",
+                  ns("why_hi"),
+                  label = "What is your theory behind your surprisingly high growth rate?", # nolint
                   width = "100%",
                   height = "200px"
                 )
@@ -84,8 +85,8 @@ mod_mitigator_ui <- function(id) {
               shiny::tags$div(
                 style = "position: absolute; bottom: 0px; width: 95%",
                 shiny::textAreaInput(
-                  ns("why_hi"),
-                  label = "What factors make it a surprisingly high % reduction", # nolint
+                  ns("why_lo"),
+                  label = "What is your theory behind your surprisingly low growth rate?",
                   width = "100%",
                   height = "200px"
                 )

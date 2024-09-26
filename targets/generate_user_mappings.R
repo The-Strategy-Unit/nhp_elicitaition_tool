@@ -6,10 +6,10 @@ generate_user_mappings <- function(file) {
     # Public health focus conditions
     "all" = list(
     ndg = c(
-        "ed-attendances",
-        "inpatient-elective-admissions",
-        "inpatient-emergency-admissions",
-        "outpatient-attendances"
+        "ed_attendances",
+        "inpatient_elective_admissions",
+        "inpatient_emergency_admissions",
+        "outpatient_attendances"
       )
     )
   ) |>
