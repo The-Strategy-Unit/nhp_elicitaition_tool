@@ -193,8 +193,8 @@ mod_mitigator_server <- function(id, email, strategies) {
       v <- if (nrow(v) == 0) {
         if (is_phase_1()) {
           list(
-            lo = get_golem_config("range")$default_low,
-            hi = get_golem_config("range")$default_high,
+            lo = get_golem_config("range")$low,
+            hi = get_golem_config("range")$high,
             comments_lo = "",
             comments_hi = ""
           )
@@ -205,7 +205,7 @@ mod_mitigator_server <- function(id, email, strategies) {
         as.list(v)
       }
 
-      shinyWidgets::updateNoUiSliderInput(
+      shiny::updateSliderInput(
         session,
         "param_values",
         value = c(v$lo, v$hi)

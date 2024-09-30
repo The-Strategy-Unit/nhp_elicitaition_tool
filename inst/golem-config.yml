@@ -4,10 +4,8 @@ default:
   app_prod: no
   horizon: 22
   range:
-    low: -5
-    high: 10
-    default_low: 0
-    default_high: 4
+    low: -7.5
+    high: 7.5
   strategies:
     ndg:
       ed_attendances:

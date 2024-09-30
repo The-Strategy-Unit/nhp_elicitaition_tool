@@ -52,24 +52,12 @@ mod_mitigator_ui <- function(id) {
           width = 12,
           shiny::fluidRow(
             col_8(
-              shinycssloaders::withSpinner(
-                plotly::plotlyOutput(ns("trend_plot"), height = "600px")
-              )
-            ),
-            col_1(
-              shinyWidgets::noUiSliderInput(
-                ns("param_values"),
-                "Annual growth rate",
-                min = get_golem_config("range")$low,
-                max = get_golem_config("range")$high,
-                value = c(get_golem_config("range")$default_low, get_golem_config("range")$default_high),
-                step = 0.1,
-                orientation = "vertical",
-                direction = "rtl",
-                width = "100%",
-                height = "500px",
-                color = "#fcdf83",
-                format = shinyWidgets::wNumbFormat(decimals = 1)
+              shiny::sliderInput(ns("param_values"),
+                          "Annual growth rate",
+              min = get_golem_config("range")$low,
+              max = get_golem_config("range")$high,
+              value = c(get_golem_config("range")$low, get_golem_config("range")$high),
+              step = 0.01
               )
             ),
             col_3(
