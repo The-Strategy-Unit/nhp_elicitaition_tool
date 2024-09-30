@@ -11,4 +11,4 @@ deploy <- function(name) {
   )
 }
 
-deploy("test_nhp_elicitation_ndg")
+deploy("nhp_elicitation_ndg_team_b")

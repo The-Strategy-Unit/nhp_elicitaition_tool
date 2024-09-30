@@ -2,10 +2,10 @@ default:
   golem_name: nhp.elicitation.tool
   golem_version: 0.0.0.9000
   app_prod: no
-  horizon: 22
   range:
     low: -7.5
     high: 7.5
+  group: "team_b"
   strategies:
     ndg:
       ed_attendances:

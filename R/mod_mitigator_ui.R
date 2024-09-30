@@ -8,106 +8,73 @@
 mod_mitigator_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  shiny::fluidRow(
-    col_12(
-      shiny::uiOutput(ns("strategy")),
-      shinyjs::disabled(
-        shinyWidgets::actionBttn(
-          ns("prev_strat"),
-          "Previous",
-          style = "simple",
-          color = "primary"
-        )
-      ),
-      identity(
-        shinyWidgets::actionBttn(
-          ns("next_strat"),
-          "Next",
-          style = "simple",
-          color = "primary"
-        )
-      ),
-      shinyjs::hidden(
-        shinyWidgets::actionBttn(
-          ns("complete"),
-          "Complete",
-          style = "simple",
-          color = "success"
-        )
-      ),
-      shinyjs::hidden(
-        shiny::selectInput(
-          ns("change_strat"),
-          "Strategy",
-          NULL
-        )
-      ),
-      shiny::tags$p("")
-    ),
-    col_9(
-      shiny::fluidRow(
-        bs4Dash::box(
-          title = "Parameter Setting",
-          collapsible = FALSE,
-          width = 12,
-          shiny::fluidRow(
-            col_8(
-              shiny::sliderInput(ns("param_values"),
-                          "Annual growth rate",
-              min = get_golem_config("range")$low,
-              max = get_golem_config("range")$high,
-              value = c(get_golem_config("range")$low, get_golem_config("range")$high),
-              step = 0.01
-              )
-            ),
-            col_3(
-              shiny::tags$div(
-                style = "position: absolute; top: 0px; width: 95%",
-                shiny::textAreaInput(
-                  ns("why_hi"),
-                  label = "What is your theory behind your surprisingly high growth rate?", # nolint
-                  width = "100%",
-                  height = "200px"
-                )
-              ),
-              shiny::tags$div(
-                style = "position: absolute; bottom: 0px; width: 95%",
-                shiny::textAreaInput(
-                  ns("why_lo"),
-                  label = "What is your theory behind your surprisingly low growth rate?",
-                  width = "100%",
-                  height = "200px"
-                )
-              )
-            )
-          ),
-          if (!is_phase_1()) {
-            shinycssloaders::withSpinner(
-              plotly::plotlyOutput(ns("results_plot"), height = "400px")
-            )
-          }
-        )
-      )
-    ),
-    col_3(
-      shiny::fluidRow(
-        bs4Dash::bs4Card(
-          title = "Progress",
-          collapsible = FALSE,
-          width = 12,
-          shinyWidgets::progressBar(
-            ns("progress"),
-            0,
-            display_pct = TRUE
-          )
-        ),
-        bs4Dash::box(
-          title = "Description",
-          collapsible = FALSE,
-          width = 12,
-          shiny::uiOutput(ns("mitigator_text"))
-        )
+  previous_button <- shinyjs::disabled(
+    shiny::actionButton(ns("prev_strat"), "Previous")
+  )
+
+  next_button <-
+    identity(
+      shiny::actionButton(ns("next_strat"), "Next")
+    )
+
+  complete_button <-
+    shinyjs::hidden(
+      shiny::actionButton(
+        ns("complete"),
+        "Complete"
       )
     )
+
+  bslib::layout_columns(
+    col_widths = c(12, 5, 4, 3),
+    bslib::card(
+      bslib::card_title(shiny::textOutput(ns("strategy"))),
+      shiny::uiOutput(ns("mitigator_text"))
+    ),
+    bslib::card(
+      bslib::card_header("Your prediction"),
+      bslib::card_body(
+        shiny::sliderInput(ns("param_values"),
+          "Annual growth rate",
+          min = get_golem_config("range")$low,
+          max = get_golem_config("range")$high,
+          value = c(get_golem_config("range")$low, get_golem_config("range")$high),
+          step = 0.01,
+          width = "100%"
+        )
+      )
+    ),
+    bslib::card(
+      bslib::card_header("Reasoning"),
+      shiny::textAreaInput(
+        ns("why_hi"),
+        width = "100%",
+        label = "What factors make it a surprisingly high % reduction?",
+        height = "100px",
+      ),
+      shiny::textAreaInput(
+        ns("why_lo"),
+        width = "100%",
+        height = "100px",
+        label = "What factors make it a surprisingly low % reduction?"
+      )
+    ),
+    bslib::card(
+      bslib::card_header("Navigation"),
+      bslib::layout_columns(previous_button, next_button, col_widths = c(6, 6)),
+      complete_button,
+      shinyWidgets::progressBar(
+        ns("progress"),
+        0,
+        display_pct = TRUE
+      )
+    ),
+    if (!is_phase_1()) {
+      bslib::card(
+        shinycssloaders::withSpinner(
+          plotly::plotlyOutput(ns("results_plot"), height = "400px")
+        )
+      )
+    }
   )
 }

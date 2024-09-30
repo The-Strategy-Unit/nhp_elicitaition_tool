@@ -10,10 +10,6 @@ hex_string_to_raw <- function(s) {
     as.raw()
 }
 
-annual_to_compound <- function(annual, years) {
-ifelse(annual != 0, 1 + sign(annual) * ((((abs(annual) / 100) + 1)^(years)) - 1), 1)
-}
-
 hash_email <- function(email, salt = Sys.getenv("NHP_SALT")) {
   if (Sys.getenv("SKIP_HASHING") != "") {
     return(email)

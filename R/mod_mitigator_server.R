@@ -6,38 +6,6 @@ mod_mitigator_server <- function(id, email, strategies) {
     # suppresses lintr warnings in vscode
     .data <- rlang::.data
 
-    # load the data
-    trend_data <- app_sys("app", "data", "trend_data.csv") |>
-      readr::read_csv(col_types = "dcddd")
-
-    # keep track of the minimum year in the data, so we always show the same
-    # range on the x-axis
-    min_year <- min(trend_data$year)
-
-    # admin stuff --------------------------------------------------------------
-    shiny::observe({
-      is_local <- Sys.getenv("SHINY_PORT") == ""
-
-      if (!is_local) {
-        shiny::req(session$user)
-      }
-
-      shinyjs::show("change_strat")
-
-      s <- purrr::map(strategies(), "name")
-
-      shiny::updateSelectInput(
-        session,
-        "change_strat",
-        choices = purrr::set_names(names(s), unname(s))
-      )
-    })
-
-    shiny::observe({
-      s <- shiny::req(input$change_strat)
-      selected_strategy(which(s == names(strategies())))
-    })
-
     # reactives ----------------------------------------------------------------
 
     # this reactive value holds the index of the currently selected strategy
@@ -47,22 +15,11 @@ mod_mitigator_server <- function(id, email, strategies) {
     # have been visited, and is used to show/hide the complete button
     has_visited_all_strategies <- shiny::reactiveVal()
 
-    # when the selected_strategy changes, get the name to display in the title
-    selected_strategy_text <- shiny::reactive({
-      s <- selected_strategy()
-      strategies()[[s]]$name
-    })
-
     # when the selected_strategy changes, get the id of the strategy to use
     # for selecting data
     selected_strategy_id <- shiny::reactive({
       s <- selected_strategy()
       names(strategies())[[s]]
-    })
-
-    selected_strategy_min_year <- shiny::reactive({
-      s <- selected_strategy()
-      strategies()[[s]]$min_year %||% min_year
     })
 
     # when the selected_strategy changes, get the "group" to use for loading
@@ -72,71 +29,6 @@ mod_mitigator_server <- function(id, email, strategies) {
       selected_strategy_id() |>
         shiny::req() |>
         stringr::str_remove("-.*$")
-    })
-
-    # when the selected strategy changes, subset the data for that strategy
-    selected_data <- shiny::reactive({
-      dplyr::filter(
-        trend_data,
-        .data[["strategy"]] == selected_strategy_id(),
-        .data[["year"]] >= selected_strategy_min_year()
-      )
-    })
-
-    # for charts that show a rate per N admissions, figure out what scale to
-    # use for N. for all othe charts, the scale is 1.
-    selected_data_scale <- shiny::reactive({
-      s <- selected_strategy()
-      if (!strategies()[[s]]$label |> stringr::str_detect("\\{n\\}")) {
-        return(1)
-      }
-      v <- mean(selected_data()$rate)
-      10^round(1 - log10(v))
-    })
-
-    # choose the format to use for the y-axis values in the chart. if the
-    # y-axis label contains a % character, then format as a percentage.
-    # otherwise, format as a number using the scale determined by
-    # selected_data_scale
-    value_format <- shiny::reactive({
-      s <- selected_strategy()
-      if (strategies()[[s]]$label |> stringr::str_detect("\\%")) {
-        return(scales::percent_format(accuracy = 0.1))
-      }
-
-      scales::number_format(accuracy = 0.1, scale = selected_data_scale())
-    })
-
-    # get the title to use for the y-axis
-    y_axis_title <- shiny::reactive({
-      s <- selected_strategy()
-      n <- scales::comma(selected_data_scale())
-      glue::glue(strategies()[[s]]$label)
-    })
-
-    # for the chart, figure out what the future values are to display on the
-    # chart as the yellow highlighted area
-    param_table <- shiny::reactive({
-      last_year <- selected_data() |>
-        dplyr::slice_tail(n = 1)
-      
-      years = get_golem_config("horizon")
-      
-      # For compound growth
-      #p <- 1 + input$param_values / 100
-      
-      # For annual growth
-      # Converts annual 0.78% -> 1.15 (multiplier for 15% compound)
-
-      p <- annual_to_compound(input$param_values, years)
-      
-      horizon_year <- last_year$year + as.numeric(paste0(years, years))
-      
-      tibble::tibble(
-        year = c(last_year$year, horizon_year), # Sets horizon year for plot
-        value_lo = last_year$rate * c(1, p[[1]]),
-        value_hi = last_year$rate * c(1, p[[2]])
-      )
     })
 
     # observers ----------------------------------------------------------------
@@ -176,7 +68,7 @@ mod_mitigator_server <- function(id, email, strategies) {
       s <- selected_strategy()
       n <- length(strategies())
 
-      shinyWidgets::updateProgressBar(session, "progress", s - 1, n)
+      shinyWidgets::updateProgressBar(session, "progress", s, n)
     })
 
     # when the selected strategy is changed, get the data from the db and
@@ -309,8 +201,8 @@ mod_mitigator_server <- function(id, email, strategies) {
     # output renderers ---------------------------------------------------------
 
     # the title displayed at the top of the page
-    output$strategy <- shiny::renderUI({
-      shiny::tags$h2(selected_strategy_text())
+    output$strategy <- shiny::renderText({
+      strategies()[[selected_strategy()]]$name
     })
 
     # the box next to the chart which shows the text describing the selected
@@ -319,27 +211,6 @@ mod_mitigator_server <- function(id, email, strategies) {
       s <- shiny::req(selected_strategy_group())
 
       md_file_to_html("app", "mitigators_text", paste0(s, ".md"))
-    })
-
-    # the main plot that shows the trend data and the selected range of values
-    output$trend_plot <- plotly::renderPlotly({
-      # ggplot throws a warning about an unknown aesthetic, because we override
-      # the plotly tooltip.
-      p <- suppressWarnings(
-        mitigator_trend_plot(
-          selected_data(),
-          param_table(),
-          value_format(),
-          min_year,
-          y_axis_title()
-        )
-      )
-
-      plotly::ggplotly(p, tooltip = "text") |>
-        plotly::config(
-          displayModeBar = FALSE,
-          displaylogo = FALSE
-        )
     })
 
     if (!is_phase_1()) {
@@ -356,6 +227,7 @@ mod_mitigator_server <- function(id, email, strategies) {
         )
 
         plotly::ggplotly(p, tooltip = "text") |>
+          plotly::style(hoverinfo = "none", traces = 2) |>
           plotly::config(
             displayModeBar = FALSE,
             displaylogo = FALSE
