@@ -3,26 +3,26 @@ default:
   golem_version: 0.0.0.9000
   app_prod: no
   range:
-    low: -7.5
-    high: 7.5
-  group: "team_b"
+    low: -10
+    high: 10
+  group: "team_a"
   strategies:
     ndg:
-      ed_attendances:
-        name: ED attendances
+      a_outpatient_attendances:
+        name: Outpatient attendances (including outpatient procedures) 
         label: "Attendances"
         min_year: 2013
-      inpatient_elective_admissions:
-        name: Inpatient elective admissions
+      b_inpatient_elective_admissions:
+        name: Elective admissions
         label: "Admissions"
         min_year: 2013
-      inpatient_emergency_admissions:
-        name: Inpatient emergency admissions
-        label: "Admissions"
-        min_year: 2013
-      outpatient_attendances:
-        name: Outpatient attendances
+      c_ed_attendances:
+        name: A&E attendances (type 1 units only) 
         label: "Attendances"
+        min_year: 2013
+      d_inpatient_emergency_admissions:
+        name: Non-elective admissions
+        label: "Admissions"
         min_year: 2013
 production:
   app_prod: yes

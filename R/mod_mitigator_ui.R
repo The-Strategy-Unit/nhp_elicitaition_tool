@@ -26,10 +26,20 @@ mod_mitigator_ui <- function(id) {
     )
 
   bslib::layout_columns(
-    col_widths = c(12, 5, 4, 3),
+    col_widths = c(8, 4, 12, 6, 6, 12),
     bslib::card(
       bslib::card_title(shiny::textOutput(ns("strategy"))),
       shiny::uiOutput(ns("mitigator_text"))
+    ),
+    bslib::card(
+      bslib::card_header("Navigation"),
+      bslib::layout_columns(previous_button, next_button, col_widths = c(6, 6)),
+      complete_button,
+      shinyWidgets::progressBar(
+        ns("progress"),
+        0,
+        display_pct = TRUE
+      )
     ),
     bslib::card(
       bslib::card_header("Your prediction"),
@@ -45,28 +55,17 @@ mod_mitigator_ui <- function(id) {
       )
     ),
     bslib::card(
-      bslib::card_header("Reasoning"),
-      shiny::textAreaInput(
-        ns("why_hi"),
-        width = "100%",
-        label = "What factors make it a surprisingly high % reduction?",
-        height = "100px",
-      ),
       shiny::textAreaInput(
         ns("why_lo"),
-        width = "100%",
-        height = "100px",
-        label = "What factors make it a surprisingly low % reduction?"
+        label = "What is your rationale for your surprisingly low prediction (P10) of residual growth?",
+        width = "100%"
       )
     ),
     bslib::card(
-      bslib::card_header("Navigation"),
-      bslib::layout_columns(previous_button, next_button, col_widths = c(6, 6)),
-      complete_button,
-      shinyWidgets::progressBar(
-        ns("progress"),
-        0,
-        display_pct = TRUE
+      shiny::textAreaInput(
+        ns("why_hi"),
+        label = "What is your rationale for your surprisingly high prediction (P90) of residual growth?",
+        width = "100%"
       )
     ),
     if (!is_phase_1()) {

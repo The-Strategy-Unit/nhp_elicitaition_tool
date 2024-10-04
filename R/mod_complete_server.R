@@ -31,7 +31,7 @@ mod_complete_server <- function(id, email, strategies) {
       results_data() |>
         gt::gt(groupname_col = "label", rowname_col = "strategy") |>
         gt::cols_label(
-          name = "Mitigator",
+          name = "Service Area",
           lo = "Low",
           hi = "High",
           comments_lo = "Low",

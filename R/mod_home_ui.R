@@ -13,7 +13,7 @@ mod_home_ui <- function(id) {
       bslib::layout_columns(
         col_widths = c(8, 4),
         bslib::card(
-          bslib::card_header(
+          bslib::card_title(
             "Instructions"
           ),
           bslib::card_body(
